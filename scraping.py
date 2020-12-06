@@ -1,6 +1,7 @@
 # Import Splinter and BeautifulSoup
 from splinter import Browser
 from bs4 import BeautifulSoup as soup
+from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import datetime as dt
@@ -8,7 +9,7 @@ import datetime as dt
 # Define function to initialize browser, create a data dictionary, end the webdriver and return scraped data
 def scrape_all():
     # Initiate headless driver for deployment
-    browser = Browser('chrome', executable_path = 'chromedriver', headless = True)
+    browser = Browser('chrome', executable_path = '/Users/kesh/Desktop/Class/Mission-to-Mars/chromedriver', headless = True)
 
     # Set 2 variables news_title and news_paragraph that the function will return
     news_title, news_paragraph = mars_news(browser)
