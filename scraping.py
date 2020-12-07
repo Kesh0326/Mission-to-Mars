@@ -20,7 +20,8 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
-        "last_modified": dt.datetime.now()
+        "last_modified": dt.datetime.now(),
+        "mars_hemispheres": mars_hemispheres(browser)
     }
 
     # Stop webdriver and return data
@@ -102,6 +103,50 @@ def mars_facts():
     
     # convert dataframe back into html, add bootstrap
     return df.to_html(classes = 'table table-striped')
+
+def mars_hemispheres(browser):
+
+    # Visit URL
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
+
+    # Parse the data
+    html_hemispheres = browser.html
+    hemisphere_soup = soup(html_hemispheres, 'html.parser')
+
+    # Scrape the data
+    items = hemisphere_soup.find_all('div', class_='item')
+
+    # Create a list to hold the images and titles.
+    hemisphere_image_urls = []
+
+    # Store the main_ul 
+    hemispheres_main_url = 'https://astrogeology.usgs.gov'
+
+    for i in items: 
+    
+        # Store title
+        title = i.find('h3').text
+    
+        # Store link that leads to full image website
+        partial_img_url = i.find('a', class_='itemLink product-item')['href']
+    
+        # Visit the link that contains the full image website 
+        browser.visit(hemispheres_main_url + partial_img_url)
+    
+        # HTML Object of individual hemisphere information website 
+        partial_img_html = browser.html
+    
+        # Parse HTML with Beautiful Soup for every individual hemisphere information website 
+        hemisphere_soup = soup(partial_img_html, 'html.parser')
+    
+        # Retrieve full image source 
+        img_url = hemispheres_main_url + hemisphere_soup.find('img', class_='wide-image')['src']
+    
+        # Append the retreived information into a list of dictionaries 
+        hemisphere_image_urls.append({"title" : title, "img_url" : img_url})
+
+    return hemisphere_image_urls    
 
 if __name__ == '__main__':
 
